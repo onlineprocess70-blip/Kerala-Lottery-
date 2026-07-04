@@ -1,0 +1,151 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kerala State Lottery - Booking</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+    body { font-family: 'Poppins', sans-serif; background-color: #05140b; }
+    .live-blink { animation: tiktik .8s infinite ease-in-out; }
+    @keyframes tiktik { 0%, 100% { opacity:1; } 50% { opacity:.2; } }
+    
+    /* टिकट का डिज़ाइन जो फोटो जैसा है */
+    .my-ticket {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 10px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+</style>
+</head>
+<body class="min-h-screen flex justify-center items-center p-2">
+
+<div class="w-full max-w-md bg-white rounded-3xl overflow-hidden shadow-2xl">
+    <div class="p-4 bg-[#05140b] text-center">
+        <div class="bg-gradient-to-r from-amber-400 to-amber-300 rounded-2xl p-4 shadow-lg border border-amber-300">
+            <h1 class="text-2xl font-black text-slate-950">Kerala Lottery</h1>
+            <p class="text-xs font-bold text-emerald-900">BUMPER - 25 Crore</p>
+        </div>
+        <div class="mt-3 bg-red-600 text-white font-black rounded-xl text-[10px] py-2 px-4 uppercase tracking-widest border border-red-700 shadow-md flex items-center justify-center gap-2">
+            <span class="h-2 w-2 bg-white rounded-full live-blink shadow"></span>
+            <span>LIVE RESULT TODAY 3:00 P.M</span>
+        </div>
+    </div>
+
+    <div class="p-4 space-y-2.5">
+        <!-- इमेज के अनुसार ENTER YOUR NAME सेक्शन -->
+        <div>
+            <label class="flex items-center gap-1 text-sm font-bold text-slate-800 uppercase tracking-wide mb-1">
+                👉 ENTER YOUR NAME 👈
+            </label>
+            <div class="relative flex items-center bg-slate-50 border border-slate-200 rounded-2xl p-1">
+                <span class="absolute left-4 text-blue-500 text-lg">👤</span>
+                <input type="text" id="custName" placeholder="enter your name" class="w-full bg-transparent pl-11 pr-4 py-3 text-sm rounded-2xl focus:outline-none placeholder-slate-400 font-medium">
+            </div>
+        </div>
+
+        <!-- इमेज के अनुसार ENTER YOUR WHATSAPP NUMBER सेक्शन -->
+        <div>
+            <label class="flex items-center gap-1 text-sm font-bold text-slate-800 uppercase tracking-wide mb-1">
+                📲 ENTER YOUR WHATSAPP NUMBER 📲
+            </label>
+            <div class="relative flex items-center bg-slate-50 border border-slate-200 rounded-2xl p-1">
+                <span class="absolute left-4 text-slate-700 text-lg">📞</span>
+                <input type="tel" id="custWhatsapp" placeholder="enter mobile number" class="w-full bg-transparent pl-11 pr-4 py-3 text-sm rounded-2xl focus:outline-none placeholder-slate-400 font-medium">
+            </div>
+        </div>
+
+        <label class="block text-xs font-bold text-slate-600 uppercase">CHOOSE YOUR LUCKY TICKETS</label>
+        <div id="tickets-grid" class="grid grid-cols-2 gap-2 h-64 overflow-y-auto p-2 border rounded-xl bg-slate-50">
+        </div>
+
+        <!-- छोटा बुक टिकट वाला बॉक्स -->
+        <div class="bg-slate-950 text-white rounded-xl p-2.5 flex justify-between items-center text-xs">
+            <span class="font-bold">Booked: <span id="ticketCount" class="text-emerald-400">0</span> Ticket(s)</span>
+            <span class="text-amber-400 font-black text-right">
+                <div class="text-[10px] text-slate-400 font-normal" id="priceCalculation">0 x ₹40</div>
+                <div>Total: ₹<span id="totalAmount">0</span></div>
+            </span>
+        </div>
+
+        <!-- प्रोसीड बटन -->
+        <button onclick="sendToWhatsApp()" class="w-full bg-emerald-800 text-white py-3 rounded-xl font-bold text-sm uppercase tracking-wide shadow-md">
+            PROCEED TO BOOK
+        </button>
+    </div>
+</div>
+
+<script>
+const ticketPrice = 40;
+let selectedTickets = [];
+
+function generateTickets() {
+    const grid = document.getElementById('tickets-grid');
+    for (let i = 0; i < 200; i++) {
+        let tNum = "KL" + (Math.floor(Math.random() * 900000) + 100000);
+        const div = document.createElement('div');
+        div.className = "my-ticket";
+        div.innerHTML = `
+            <span class="text-amber-500 text-xl">🎫</span>
+            <div>
+                <div class="font-bold text-[12px] text-gray-800">${tNum}</div>
+                <div class="text-[9px] text-gray-500">Price: ₹40</div>
+            </div>
+        `;
+        
+        div.onclick = function() {
+            if (selectedTickets.includes(tNum)) {
+                selectedTickets = selectedTickets.filter(t => t !== tNum);
+                div.style.backgroundColor = 'white';
+                div.style.color = 'black';
+                div.querySelector('.text-gray-500').style.color = '#6b7280';
+            } else {
+                selectedTickets.push(tNum);
+                div.style.backgroundColor = 'black';
+                div.style.color = 'white';
+                div.querySelector('.text-gray-500').style.color = '#cbd5e1';
+            }
+            updateTotal();
+        };
+        grid.appendChild(div);
+    }
+}
+
+function updateTotal() {
+    const count = selectedTickets.length;
+    const total = count * ticketPrice;
+    
+    document.getElementById('ticketCount').innerText = count;
+    document.getElementById('totalAmount').innerText = total;
+    
+    if(count > 0) {
+        document.getElementById('priceCalculation').innerText = `${count} x ₹${ticketPrice}`;
+    } else {
+        document.getElementById('priceCalculation').innerText = `0 x ₹40`;
+    }
+}
+
+function sendToWhatsApp() {
+    const name = document.getElementById('custName').value;
+    const phone = document.getElementById('custWhatsapp').value;
+    if(!name || !phone || selectedTickets.length === 0) {
+        alert("Please fill all details and select a ticket!");
+        return;
+    }
+    const msg = `Name: ${name}%0APhone: ${phone}%0ATickets: ${selectedTickets.join(", ")}%0ATotal: ₹${selectedTickets.length * ticketPrice}`;
+    
+    // यहाँ आपका नया नंबर अपडेट कर दिया गया है
+    window.open(`https://wa.me/918092559490?text=${msg}`, '_blank');
+}
+
+generateTickets();
+</script>
+</body>
+</html>
